@@ -20,8 +20,15 @@ class eatChocolates(object):
         high = self.m
         while low < high:
             mid = math.ceil((low + high) / 2)
-            if 
+            if self.sum_of_chocolates(mid) == self.m:
+                return mid
+            elif self.sum_of_chocolates(mid) < self.m:
+                low = mid
+            else:
+                high = mid - 1
+        return high
 
 
 n, m = map(int, input().split())
 smallQ = eatChocolates(n, m)
+print(smallQ.max_chocolates_first_day())
