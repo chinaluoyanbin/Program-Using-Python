@@ -7,7 +7,6 @@ for i in range(m):
 for el in lyst:
     print(el)
 
-
 """
 5 3
 4
