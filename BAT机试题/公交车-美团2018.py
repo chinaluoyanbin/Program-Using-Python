@@ -7,43 +7,73 @@
 
 
 class Solution(object):
-    def __init__(self, n, starts, remains):
-        self.n = n
-        self.starts = starts
-        self.remains = remains
-        self.cost = 100001
+    def __init__(self, n):
+        self.neighbors = {}
+        self.visited = {}
+        self.routes = {}
+        self.current_route = -1
         self.count = 0
-        self.visited = []
+        self.n = n
+        self.res = []
 
-    def bfs(self, x):
-        if x == self.n:
-            if self.count < self.cost:
-                self.cost = self.count
-        else:
-            for remain in self.remains:
-                if remain[0] == x and remain not in self.visited:
-                    self.visited.append(remain)
-                    self.count += 1
-                    for el in remain[1:]:
-                        self.bfs(el)
+    def add_nodes(self):
+        for i in range(1, self.n + 1):
+            self.add_node(i)
 
-    def begin(self):
-        for start in self.starts:
-            self.count = 1
-            self.visited = []
-            for el in start[1:]:
-                self.bfs(el)
-        return self.cost
+    def add_node(self, node):
+        if node not in self.nodes():
+            self.neighbors[node] = []
+
+    def nodes(self):
+        return self.neighbors.keys()
+
+    def visited_initial(self):
+        for node in self.nodes():
+            self.visited[node] = False
+
+    def add_edge(self, edge, number):
+        self.routes[edge] = number
+        node, neighbor = edge
+        if neighbor not in self.neighbors[node]:
+            self.neighbors[node].append(neighbor)
+
+    def breadth_first_search(self, root=1):
+        queue = []
+
+        def bfs():
+            while len(queue) > 0:
+                node = queue.pop(0)
+
+                self.visited[node] = True
+                temp = self.count
+                for n in self.neighbors[node]:
+                    self.count = temp
+                    if not self.visited[n]:
+                        queue.append(n)
+                        if self.current_route != self.routes[(node, n)]:
+                            self.count += 1
+                        if n == self.n:
+                            self.res.append(self.count)
+                        else:
+                            bfs()
+
+        for n in self.neighbors[root]:
+            self.visited_initial()
+            self.visited[n] = True
+            self.count = 0
+            self.current_route = self.routes[(root, n)]
+            self.count += 1
+            queue.append(n)
+            bfs()
+
+        return min(self.res)
 
 
 n, m = map(int, input().split())
-starts = []
-remains = []
+ins = Solution(n)
+ins.add_nodes()
 for i in range(m):
     temp = list(map(int, input().split()))
-    if temp[1] == 1:
-        starts.append(temp[1:])
-    else:
-        remains.append(temp[1:])
-instance = Solution(n, starts, remains)
-print(instance.begin())
+    for j in range(1, len(temp) - 1):
+        ins.add_edge((temp[j], temp[j + 1]), i)
+print(ins.breadth_first_search())
